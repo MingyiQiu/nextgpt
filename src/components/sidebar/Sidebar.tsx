@@ -5,8 +5,12 @@ import { useSidebarStore } from "@/store/useSlidebarStore";
 import { FiPlus, FiSearch, FiSidebar, FiX } from "react-icons/fi";
 import Logo from "./Logo";
 import { useState } from "react";
+import { dummyChats } from "@/constants/dummyChats";
+import ChatItem from "../chat/ChatItem";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
+  const router = useRouter();
   const { openMobile, closeMobile, isExpanded, isMobileOpen, toggleExpanded } =
     useSidebarStore();
   const { selectedChat, setSelectedChat } = useChatStore();
@@ -84,6 +88,25 @@ export default function Sidebar() {
             </div>
           </div>
         )}
+
+        {/* chats */}
+        <div className="mt-6 flex-1 overflow-y-auto px-3">
+          <div className="space-y-1">
+            {dummyChats.map((chat) => (
+              <ChatItem
+                chat={chat}
+                key={chat.id}
+                isExpanded={isExpanded}
+                isSelected={selectedChat?.id === chat.id}
+                onClick={() => {
+                  router.replace("/chat");
+                  closeMobile();
+                  setSelectedChat(chat);
+                }}
+              />
+            ))}
+          </div>
+        </div>
       </aside>
     </>
   );
