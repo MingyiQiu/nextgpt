@@ -20,7 +20,10 @@ export default function Sidebar() {
   return (
     <>
       {/* mobile menu button */}
-      <button className="fixed left-4 top-4 z-50 rounded-lg bg-card p-2 md:hidden">
+      <button
+        onClick={openMobile}
+        className="fixed left-4 top-4 z-50 rounded-lg bg-card p-2 md:hidden"
+      >
         <FiSidebar size={20} />
       </button>
 

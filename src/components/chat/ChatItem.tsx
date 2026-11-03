@@ -15,9 +15,12 @@ export default function ChatItem({
 }: ChatItemProps) {
   return (
     <div
-      className={`group flex w-full items-center justify-between rounded-xl px-3 py-3 transition cursor-pointer ${isSelected ? "bg-card" : "hover:bg-card/60"}`}
+      className={`group flex w-full items-center justify-between rounded-xl px-3 py-3 transition  ${isSelected ? "bg-card" : "hover:bg-card/60"}`}
     >
-      <button className="flex flex-1 items-center min-w-0">
+      <button
+        onClick={onClick}
+        className="flex flex-1 items-center min-w-0 cursor-pointer"
+      >
         {isExpanded && <span className="truncate text-sm">{chat.title}</span>}
       </button>
 
