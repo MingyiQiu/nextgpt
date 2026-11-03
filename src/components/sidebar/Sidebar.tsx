@@ -2,7 +2,7 @@
 
 import { useChatStore } from "@/store/useChatStore";
 import { useSidebarStore } from "@/store/useSidebarStore";
-import { FiPlus, FiSearch, FiSidebar, FiX } from "react-icons/fi";
+import { FiLogOut, FiPlus, FiSearch, FiSidebar, FiX } from "react-icons/fi";
 import Logo from "./Logo";
 import { useState } from "react";
 import { dummyChats } from "@/constants/dummyChats";
@@ -92,7 +92,7 @@ export default function Sidebar() {
         )}
 
         {/* chats */}
-        <div className="mt-6 flex-1 overflow-y-auto px-3">
+        <div className="mt-6 flex-1 overflow-y-auto px-3 no-scrollbar">
           <div className="space-y-1">
             {dummyChats.map((chat) => (
               <ChatItem
@@ -127,6 +127,32 @@ export default function Sidebar() {
             </button>
           )}
         </Link>
+
+        {/* user */}
+        <div className="border-t border-border p-3">
+          <button
+            className={`flex w-full items-center rounded-xl p-2 hover:bg-card ${!isExpanded && "justify-center"}`}
+          >
+            <div className="grid h-10 w-10 place-items-center rounded-full bg-violet-600 font-semibold text-white">
+              A
+            </div>
+            {isExpanded && (
+              <div className="ml-3 text-left">
+                <p className="text-md">Anonymous</p>
+              </div>
+            )}
+          </button>
+
+          <button
+            className={`mt-2 flex w-full items-center rounded-xl p-3 text-red-400 transition cursor-pointer hover:bg-card ${!isExpanded && "justify-center"}`}
+          >
+            <FiLogOut size={18} />
+
+            {isExpanded && (
+              <span className="ml-3 font-medium text-sm">Logout</span>
+            )}
+          </button>
+        </div>
       </aside>
     </>
   );
