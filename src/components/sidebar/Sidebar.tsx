@@ -1,13 +1,15 @@
 "use client";
 
 import { useChatStore } from "@/store/useChatStore";
-import { useSidebarStore } from "@/store/useSlidebarStore";
+import { useSidebarStore } from "@/store/useSidebarStore";
 import { FiPlus, FiSearch, FiSidebar, FiX } from "react-icons/fi";
 import Logo from "./Logo";
 import { useState } from "react";
 import { dummyChats } from "@/constants/dummyChats";
 import ChatItem from "../chat/ChatItem";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { RiCoinsLine } from "react-icons/ri";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -107,6 +109,24 @@ export default function Sidebar() {
             ))}
           </div>
         </div>
+
+        {/* credits */}
+        <Link href="/pricing" className="px-3 pb-3">
+          {isExpanded ? (
+            <div className="rounded-xl border border-border bg-card p-4">
+              <div className="flex items-center gap-2">
+                <RiCoinsLine size={18} className="text-yellow-500" />
+                <span className="text-sm font-medium">Credits</span>
+              </div>
+              <p className="mt-3 text-2xl font-bold">120</p>
+              <p className="text-muted text-xs">Remaining credits</p>
+            </div>
+          ) : (
+            <button className="flex h-12 w-full items-center justify-center rounded-xl bg-card">
+              <RiCoinsLine size={20} className="text-yellow-500" />
+            </button>
+          )}
+        </Link>
       </aside>
     </>
   );
