@@ -10,6 +10,7 @@ import ChatItem from "../chat/ChatItem";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RiCoinsLine } from "react-icons/ri";
+import { authClient } from "@/lib/auth-client";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -17,6 +18,11 @@ export default function Sidebar() {
     useSidebarStore();
   const { selectedChat, setSelectedChat } = useChatStore();
   const [search, setSearch] = useState("");
+  const handleLogout = async () => {
+    await authClient.signOut();
+    setSelectedChat(null);
+    router.refresh();
+  };
   return (
     <>
       {/* mobile menu button */}
@@ -147,6 +153,7 @@ export default function Sidebar() {
           </button>
 
           <button
+            onClick={handleLogout}
             className={`mt-2 flex w-full items-center rounded-xl p-3 text-red-400 transition cursor-pointer hover:bg-card ${!isExpanded && "justify-center"}`}
           >
             <FiLogOut size={18} />

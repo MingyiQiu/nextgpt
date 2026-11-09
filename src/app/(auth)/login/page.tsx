@@ -1,6 +1,88 @@
+"use client";
+
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
+
+interface LoginValues {
+  email: string;
+  password: string;
+}
+
+type LoginErrors = Partial<Record<keyof LoginValues, string>>;
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [values, setValues] = useState<LoginValues>({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState<LoginErrors>({});
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: undefined,
+    }));
+  };
+
+  const validate = () => {
+    const newErrors: LoginErrors = {};
+    //validate the email field
+    if (!values.email.trim()) {
+      newErrors.email = "Email is required!";
+    } else if (!/^\S+@\S+\.\S+$/.test(values.email)) {
+      newErrors.email = "Enter a valid email address!";
+    }
+
+    //validate the password field
+    if (!values.password.trim()) {
+      newErrors.password = "Password is required!";
+    } else if (values.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters!";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const onSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      setLoading(true);
+      const { error } = await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        toast.error(error.message as string);
+        return;
+      }
+      toast.success("Login successful");
+      setValues({ email: "", password: "" });
+      router.replace("/chat");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm bg-card border border-border p-6 rounded-2xl">
@@ -9,7 +91,7 @@ export default function LoginPage() {
           <p className="text-zinc-400">Sign in to your account</p>
         </div>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={onSubmit}>
           <div>
             <label
               htmlFor="email"
@@ -18,11 +100,17 @@ export default function LoginPage() {
               Email
             </label>
             <input
+              value={values.email}
+              onChange={handleChange}
+              name="email"
               type="email"
               id="email"
               placeholder="email"
               className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white outline-none transition focus:border-violet-500 mt-2"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email}</p>
+            )}
           </div>
           <div>
             <label
@@ -32,17 +120,23 @@ export default function LoginPage() {
               Password
             </label>
             <input
+              value={values.password}
+              onChange={handleChange}
+              name="password"
               type="password"
               id="password"
               placeholder="********"
               className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white outline-none transition focus:border-violet-500 mt-2"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password}</p>
+            )}
           </div>
           <button
             type="submit"
             className="w-full rounded-lg bg-violet-600 py-3 font-medium text-white transition hover:bg-violet-500 cursor-pointer"
           >
-            Login
+            {loading ? "Logging In..." : "Login"}
           </button>
           <p className="mt-6 text-center text-sm text-zinc-400">
             Don&apos;t have an account?{" "}
