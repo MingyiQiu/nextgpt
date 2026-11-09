@@ -3,6 +3,8 @@ import Sidebar from "@/components/sidebar/Sidebar";
 import { getCurrentUser } from "@/server-actions/getCurrentUser";
 import { redirect } from "next/navigation";
 
+export const instant = false;
+
 export default async function ProtectedLayout({ children }: LayoutProps<"/">) {
   const user = await getCurrentUser();
   if (!user) {
