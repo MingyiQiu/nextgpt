@@ -5,7 +5,6 @@ import { useSidebarStore } from "@/store/useSidebarStore";
 import { FiLogOut, FiPlus, FiSearch, FiSidebar, FiX } from "react-icons/fi";
 import Logo from "./Logo";
 import { useEffect, useState } from "react";
-import { dummyChats } from "@/constants/dummyChats";
 import ChatItem from "../chat/ChatItem";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -17,14 +16,21 @@ export default function Sidebar() {
   const router = useRouter();
   const { openMobile, closeMobile, isExpanded, isMobileOpen, toggleExpanded } =
     useSidebarStore();
-  const { selectedChat, setSelectedChat, setChats, chats } = useChatStore();
+  const { selectedChat, setSelectedChat, setChats, chats, setMessages } =
+    useChatStore();
   const [search, setSearch] = useState("");
   const [loadingChats, setLoadingChats] = useState(true);
 
   const handleLogout = async () => {
     await authClient.signOut();
     setSelectedChat(null);
+    setMessages([]);
     router.refresh();
+  };
+
+  const handleNewChat = () => {
+    setSelectedChat(null);
+    setMessages([]);
   };
 
   useEffect(() => {
@@ -89,7 +95,8 @@ export default function Sidebar() {
         {/* new chat */}
         <div className="px-3">
           <button
-            className={`flex w-full items-center rounded-xl bg-primary px-4 py-3 text-white transition hover:opacity-90 ${!isExpanded && "justify-center"}`}
+            onClick={handleNewChat}
+            className={`flex w-full items-center rounded-xl bg-primary px-4 py-3 text-white transition hover:opacity-90 cursor-pointer ${!isExpanded && "justify-center"}`}
           >
             <FiPlus size={18} />
             {isExpanded && (
