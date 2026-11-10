@@ -4,25 +4,39 @@ import { useChatStore } from "@/store/useChatStore";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import { FiLogOut, FiPlus, FiSearch, FiSidebar, FiX } from "react-icons/fi";
 import Logo from "./Logo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { dummyChats } from "@/constants/dummyChats";
 import ChatItem from "../chat/ChatItem";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RiCoinsLine } from "react-icons/ri";
 import { authClient } from "@/lib/auth-client";
+import { getChats } from "@/server-actions/getChats";
 
 export default function Sidebar() {
   const router = useRouter();
   const { openMobile, closeMobile, isExpanded, isMobileOpen, toggleExpanded } =
     useSidebarStore();
-  const { selectedChat, setSelectedChat } = useChatStore();
+  const { selectedChat, setSelectedChat, setChats, chats } = useChatStore();
   const [search, setSearch] = useState("");
+  const [loadingChats, setLoadingChats] = useState(true);
+
   const handleLogout = async () => {
     await authClient.signOut();
     setSelectedChat(null);
     router.refresh();
   };
+
+  useEffect(() => {
+    const loadChats = async () => {
+      const chats = await getChats();
+
+      setChats(chats);
+      setLoadingChats(false);
+    };
+
+    loadChats();
+  }, [setChats]);
   return (
     <>
       {/* mobile menu button */}
@@ -102,21 +116,33 @@ export default function Sidebar() {
 
         {/* chats */}
         <div className="mt-6 flex-1 overflow-y-auto px-3 no-scrollbar">
-          <div className="space-y-1">
-            {dummyChats.map((chat) => (
-              <ChatItem
-                chat={chat}
-                key={chat.id}
-                isExpanded={isExpanded}
-                isSelected={selectedChat?.id === chat.id}
-                onClick={() => {
-                  router.replace("/chat");
-                  closeMobile();
-                  setSelectedChat(chat);
-                }}
-              />
-            ))}
-          </div>
+          {isExpanded && <h2 className="px-6 font-bold my-1">Recent</h2>}
+
+          {loadingChats && (
+            <div className="py-3 space-y-3 ">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="h-8 animate-pulse rounded-xl"></div>
+              ))}
+            </div>
+          )}
+
+          {!loadingChats && chats && (
+            <div className="space-y-1">
+              {chats.map((chat) => (
+                <ChatItem
+                  chat={chat}
+                  key={chat.id}
+                  isExpanded={isExpanded}
+                  isSelected={selectedChat?.id === chat.id}
+                  onClick={() => {
+                    router.replace("/chat");
+                    closeMobile();
+                    setSelectedChat(chat);
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* credits */}
