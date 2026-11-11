@@ -2,22 +2,51 @@
 
 import { useChatStore } from "@/store/useChatStore";
 import Logo from "../sidebar/Logo";
-import { dummyMessages } from "@/constants/dummyMessages";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TypingIndicator from "../loading/TypingIndicator";
 import { FaArrowUp } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { createChat } from "@/server-actions/createChat";
 import { createMessage } from "@/server-actions/createMessage";
+import { getMessages } from "@/server-actions/getMessages";
 
 export default function ChatBox() {
   const router = useRouter();
-  const { selectedChat, mode, setMode, addChat, setSelectedChat, addMessage } =
-    useChatStore();
+  const {
+    selectedChat,
+    mode,
+    setMode,
+    addChat,
+    setSelectedChat,
+    addMessage,
+    setMessages,
+    messages,
+  } = useChatStore();
   const [loadingType, setLoadingType] = useState<"TEXT" | "IMAGE" | null>(null);
   const [prompt, setPrompt] = useState("");
+  const [loadingMessages, setLoadingMessages] = useState(false);
+
+  useEffect(() => {
+    const loadMessages = async () => {
+      if (!selectedChat) return;
+
+      try {
+        setLoadingMessages(true);
+
+        const data = await getMessages(selectedChat.id);
+
+        setMessages(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoadingMessages(false);
+      }
+    };
+
+    loadMessages();
+  }, [selectedChat, setMessages]);
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
@@ -69,34 +98,52 @@ export default function ChatBox() {
             </p>
           </div>
         ) : (
-          <div className="mx-auto flex flex-col gap-4 md:gap-6">
-            {dummyMessages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`rounded-2xl px-4 py-3 ${message.role === "user" ? "bg-primary" : "border border-border bg-card"}`}
-                >
-                  {message.content && (
-                    <p className="text-sm leading-relaxed">{message.content}</p>
-                  )}
-
-                  {message.image && (
-                    <Image
-                      src={message.image}
-                      alt="Generated Image"
-                      width={1024}
-                      height={1024}
-                      className="mt-3 w-full rounded-2xl border border-white/10 object-cover"
-                    />
-                  )}
-                </div>
+          <>
+            {!loadingMessages && messages.length === 0 ? (
+              <div className="flex h-full flex-col items-center justify-center text-center">
+                <Logo />
+                <h2 className="mt-6 text-2xl font-bold md:text-4xl text-white/90">
+                  Start the conversation
+                </h2>
+                <p className="mt-3 max-w-md text-sm text-muted md:text-base">
+                  Type a prompt to start chatting
+                </p>
               </div>
-            ))}
+            ) : (
+              <div className="mx-auto flex flex-col gap-4 md:gap-6">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.role === "USER" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`rounded-2xl px-4 py-3 ${message.role === "USER" ? "bg-primary" : "border border-border bg-card"}`}
+                    >
+                      {message.content && (
+                        <p className="text-sm leading-relaxed">
+                          {message.content}
+                        </p>
+                      )}
 
-            {loadingType && <TypingIndicator />}
-          </div>
+                      {message.imageURL && (
+                        <Image
+                          src={message.imageURL}
+                          alt="Generated Image"
+                          width={1024}
+                          height={1024}
+                          className="mt-3 w-full rounded-2xl border border-white/10 object-cover"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {(loadingType === "TEXT" || loadingMessages) && (
+                  <TypingIndicator />
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
