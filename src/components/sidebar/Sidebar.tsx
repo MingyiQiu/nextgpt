@@ -21,6 +21,10 @@ export default function Sidebar() {
   const [search, setSearch] = useState("");
   const [loadingChats, setLoadingChats] = useState(true);
 
+  const filterChats = chats.filter((chat) =>
+    chat.title.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
+  );
+
   const handleLogout = async () => {
     await authClient.signOut();
     setSelectedChat(null);
@@ -135,7 +139,7 @@ export default function Sidebar() {
 
           {!loadingChats && chats && (
             <div className="space-y-1">
-              {chats.map((chat) => (
+              {filterChats.map((chat) => (
                 <ChatItem
                   chat={chat}
                   key={chat.id}

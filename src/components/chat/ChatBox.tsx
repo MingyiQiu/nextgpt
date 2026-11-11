@@ -3,7 +3,7 @@
 import { useChatStore } from "@/store/useChatStore";
 import Logo from "../sidebar/Logo";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TypingIndicator from "../loading/TypingIndicator";
 import { FaArrowUp } from "react-icons/fa";
 import toast from "react-hot-toast";
@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { createChat } from "@/server-actions/createChat";
 import { createMessage } from "@/server-actions/createMessage";
 import { getMessages } from "@/server-actions/getMessages";
+import { generateText } from "@/server-actions/generateText";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 export default function ChatBox() {
   const router = useRouter();
@@ -24,6 +26,7 @@ export default function ChatBox() {
     setMessages,
     messages,
   } = useChatStore();
+  const messageEndRef = useRef<HTMLDivElement>(null);
   const [loadingType, setLoadingType] = useState<"TEXT" | "IMAGE" | null>(null);
   const [prompt, setPrompt] = useState("");
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -47,6 +50,13 @@ export default function ChatBox() {
 
     loadMessages();
   }, [selectedChat, setMessages]);
+
+  useEffect(() => {
+    messageEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
+
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
@@ -74,6 +84,28 @@ export default function ChatBox() {
       });
 
       addMessage(userMessage);
+
+      //send the prompt to the ai
+      const history = messages
+        .filter((message) => message.content)
+        .slice(-20)
+        .map((message) => ({
+          role: message.role,
+          content: message.content!,
+        }));
+
+      const aiResponse = await generateText({
+        prompt: currentPrompt,
+        history,
+      });
+
+      const assistantMessage = await createMessage({
+        chatId: chat.id,
+        role: "ASSISTANT",
+        content: aiResponse,
+      });
+
+      addMessage(assistantMessage);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Something went wrong.",
@@ -120,9 +152,17 @@ export default function ChatBox() {
                       className={`rounded-2xl px-4 py-3 ${message.role === "USER" ? "bg-primary" : "border border-border bg-card"}`}
                     >
                       {message.content && (
-                        <p className="text-sm leading-relaxed">
-                          {message.content}
-                        </p>
+                        <>
+                          {message.role === "USER" ? (
+                            <p className="text-sm leading-relaxed">
+                              {message.content}
+                            </p>
+                          ) : (
+                            <MarkdownRenderer>
+                              {message.content}
+                            </MarkdownRenderer>
+                          )}
+                        </>
                       )}
 
                       {message.imageURL && (
