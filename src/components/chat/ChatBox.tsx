@@ -13,6 +13,8 @@ import { createMessage } from "@/server-actions/createMessage";
 import { getMessages } from "@/server-actions/getMessages";
 import { generateText } from "@/server-actions/generateText";
 import MarkdownRenderer from "./MarkdownRenderer";
+import { generateImage } from "@/server-actions/generateImage";
+import ImageGeneratingIndicator from "../loading/ImageGeneratingIndicator";
 
 export default function ChatBox() {
   const router = useRouter();
@@ -84,6 +86,20 @@ export default function ChatBox() {
       });
 
       addMessage(userMessage);
+
+      if (mode === "IMAGE") {
+        setLoadingType("IMAGE");
+
+        const imageURL = await generateImage(currentPrompt);
+
+        const assistantMessage = await createMessage({
+          chatId: chat.id,
+          role: "ASSISTANT",
+          imageURL,
+        });
+        addMessage(assistantMessage);
+        return;
+      }
 
       //send the prompt to the ai
       const history = messages
@@ -181,10 +197,13 @@ export default function ChatBox() {
                 {(loadingType === "TEXT" || loadingMessages) && (
                   <TypingIndicator />
                 )}
+
+                {loadingType === "IMAGE" && <ImageGeneratingIndicator />}
               </div>
             )}
           </>
         )}
+        <div ref={messageEndRef} />
       </div>
 
       {/* input */}
