@@ -12,7 +12,7 @@ export default async function ProtectedLayout({ children }: LayoutProps<"/">) {
   }
   return (
     <div>
-      <Sidebar />
+      <Sidebar initialCredits={user.credits ?? 0} username={user.name} />
       <DashboardLayout>{children}</DashboardLayout>
     </div>
   );

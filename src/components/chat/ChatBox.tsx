@@ -15,6 +15,8 @@ import { generateText } from "@/server-actions/generateText";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { generateImage } from "@/server-actions/generateImage";
 import ImageGeneratingIndicator from "../loading/ImageGeneratingIndicator";
+import { consumeCredits } from "@/server-actions/consumeCredits";
+import { checkRateLimit } from "@/server-actions/checkRateLimit";
 
 export default function ChatBox() {
   const router = useRouter();
@@ -67,6 +69,12 @@ export default function ChatBox() {
     setLoadingType("TEXT");
 
     try {
+      //check for rate limit
+      await checkRateLimit();
+
+      //check or consume credits
+      await consumeCredits(mode === "IMAGE" ? 3 : 1);
+
       let chat = selectedChat;
       if (!chat) {
         //create chat
