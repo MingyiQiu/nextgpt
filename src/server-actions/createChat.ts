@@ -7,7 +7,7 @@ export async function createChat() {
   const currentUser = await getCurrentUser();
 
   if (!currentUser?.id) {
-    throw new Error("Unauthorized");
+    throw new Error("Unauthorized.");
   }
 
   const chat = await prisma.chat.create({

@@ -6,7 +6,7 @@ export async function checkRateLimit() {
   const currentUser = await getCurrentUser();
 
   if (!currentUser?.id) {
-    throw new Error("Unauthorized");
+    throw new Error("Unauthorized.");
   }
 
   const { success } = await rateLimit.limit(`user:${currentUser.id}`);

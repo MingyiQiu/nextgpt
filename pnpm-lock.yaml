@@ -56,10 +56,16 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      stripe:
+        specifier: ^23.1.0
+        version: 23.1.0(@types/node@20.19.43)
       zustand:
         specifier: ^5.0.16
         version: 5.0.16(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
+      '@stripe/cli':
+        specifier: ^1.55.13
+        version: 1.55.13
       '@tailwindcss/turbopack':
         specifier: ^4
         version: 4.3.3
@@ -786,6 +792,36 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@stripe/cli-darwin-arm64@1.55.13':
+    resolution: {integrity: sha512-7CeHOsKqcaldrQbLiDXQnLGoNyZqZ354J2elCSZcSlIRA9txjLY7JR8ityvKSsYFZWApfvqMfE5KH/aZQZb5+A==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@stripe/cli-darwin-x64@1.55.13':
+    resolution: {integrity: sha512-TIt94r0gqydfTI2zQNlIQc9/vEJ/eVN7rrPJ6EaLGD56AOhqIlXky7N0ZrlnblHfVSKpD4Hfy3FGCsfxdMroAg==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@stripe/cli-linux-arm64@1.55.13':
+    resolution: {integrity: sha512-OYr6U34u7h3jKmY2BNvZ3XuQpjcQb3GocO0nKXgV5x/4sT2PqdMZCF8SUyEsohSboFy4/yfKTQvbLDLbdiv0Cw==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@stripe/cli-linux-x64@1.55.13':
+    resolution: {integrity: sha512-0v5WkaBFS3A7/rpUfluEzNDs3AIHHpWFo2BgUmolXjyl7TeCvcH/8QbD1+BzoXxBxZPSieR9JGBreDXb98IBjw==}
+    cpu: [x64]
+    os: [linux]
+
+  '@stripe/cli-win32-x64@1.55.13':
+    resolution: {integrity: sha512-+zDwfGxIJ4bm9K+lNVjDbYpKagsCmJgn89bIhUex/6l+siNnmXcY/ittlmAWiJLkpB7ix8bJeyqUc4nmmFKj/g==}
+    cpu: [x64]
+    os: [win32]
+
+  '@stripe/cli@1.55.13':
+    resolution: {integrity: sha512-J/1AUZKMRX8pxzjzrliSHcZYTN2Nk97lG+CtYxn11qF8jNQWHpdqpel1BKULA5bbq1HgrE8GPM9C7nLEo3B/yQ==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
 
   '@swc/helpers@0.5.23':
     resolution: {integrity: sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==}
@@ -3059,6 +3095,15 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
+  stripe@23.1.0:
+    resolution: {integrity: sha512-fVUfMSfTPoukfoV//MUKAx2+YxyKmYaYtnAL9VkfnHfaPNQylFdWZMD+zgUFerI8rjbaiER8Vzj2XEUQ2AhAsQ==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@types/node': '>=20'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+
   style-to-object@2.0.2:
     resolution: {integrity: sha512-QmbXPUylqU80HAgTOJeEOdbA40W9KtxmjMhQy+tq+b8F2aoh3aQLuy82hh2jm2qsC9hR9eI0+eQidTMydKcqRA==}
 
@@ -3921,6 +3966,29 @@ snapshots:
   '@rtsao/scc@1.1.0': {}
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@stripe/cli-darwin-arm64@1.55.13':
+    optional: true
+
+  '@stripe/cli-darwin-x64@1.55.13':
+    optional: true
+
+  '@stripe/cli-linux-arm64@1.55.13':
+    optional: true
+
+  '@stripe/cli-linux-x64@1.55.13':
+    optional: true
+
+  '@stripe/cli-win32-x64@1.55.13':
+    optional: true
+
+  '@stripe/cli@1.55.13':
+    optionalDependencies:
+      '@stripe/cli-darwin-arm64': 1.55.13
+      '@stripe/cli-darwin-x64': 1.55.13
+      '@stripe/cli-linux-arm64': 1.55.13
+      '@stripe/cli-linux-x64': 1.55.13
+      '@stripe/cli-win32-x64': 1.55.13
 
   '@swc/helpers@0.5.23':
     dependencies:
@@ -6650,6 +6718,10 @@ snapshots:
   strip-bom@3.0.0: {}
 
   strip-json-comments@3.1.1: {}
+
+  stripe@23.1.0(@types/node@20.19.43):
+    optionalDependencies:
+      '@types/node': 20.19.43
 
   style-to-object@2.0.2:
     dependencies:

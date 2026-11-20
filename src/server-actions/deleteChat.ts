@@ -7,7 +7,7 @@ export async function deleteChat(chatId: string) {
   const currentUser = await getCurrentUser();
 
   if (!currentUser?.id) {
-    throw new Error("Unauthorized");
+    throw new Error("Unauthorized.");
   }
 
   await prisma.chat.delete({
